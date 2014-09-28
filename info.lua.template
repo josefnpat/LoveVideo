@@ -1,0 +1,12 @@
+local info = {}
+
+info.image_format = "%FORMAT%"
+info.fps = %FPS%
+info.frame = {
+  width = %WIDTH%,
+  height = %HEIGHT%,
+  rows = %ROWS%,
+  columns = %COLUMNS%
+}
+
+return info
