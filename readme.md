@@ -29,12 +29,12 @@ end
 
 To build the full module docs, run;
 
-`./tools/gen_docs.sh`.
+`./tools/gen_docs.sh`
 (dependencies: lua-ldoc)
 
 To create a directory containing a valid video target, run;
 
-`./tool/convert.sh [path_to_foo.mp4] [target_video_output]
+`./tool/convert.sh [path_to_foo.mp4] [target_video_output]`
 (dependencies: libimage-exiftool-perl libav-tools imagemagick)
 
 To build a sample video, run;
