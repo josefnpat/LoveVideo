@@ -107,9 +107,12 @@ function lovevideo.newVideo(target)
   self._images = {}
 
   for i = 1,2 do
-    self._channelfilename:push(target.."/"..i.."."..self._info.image_format)
-    self._imagedata = self._channelimagedata:demand()
-    self._images[i] = love.graphics.newImage(self._imagedata)
+    local image_file = target.."/"..i.."."..self._info.image_format
+    if love.filesystem.isFile(image_file) then
+      self._channelfilename:push(image_file)
+      self._imagedata = self._channelimagedata:demand()
+      self._images[i] = love.graphics.newImage(self._imagedata)
+    end
   end
 
   self._audio = love.audio.newSource(target.."/audio.ogg")
