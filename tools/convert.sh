@@ -6,6 +6,7 @@ OUTPUT_DIR=$2
 TEMP=`mktemp -d`
 
 FPS=24
+QUALITY=92
 OPEN_GL_TEXTURE_MAX=2048
 WIDTH=`exiftool -q -p '\$ImageWidth' $INPUT_FILE`
 HEIGHT=`exiftool -q -p '\$ImageHeight' $INPUT_FILE`
@@ -16,15 +17,16 @@ COLUMNS=`expr $OPEN_GL_TEXTURE_MAX / $WIDTH`
 ROWS=`expr $OPEN_GL_TEXTURE_MAX / $HEIGHT`
 TILE_COUNT=`expr $ROWS \* $COLUMNS`
 
+EXTRACT_FORMAT=png
 FORMAT=jpg
 
-echo "Converting $INPUT_FILE to raw $FORMAT ($TEMP) .."
+echo "Converting $INPUT_FILE to raw $EXTRACT_FORMAT ($TEMP) .."
 
 avconv -i $INPUT_FILE -r $FPS -f image2 \
   -v quiet \
-  $TEMP/raw-%d.$FORMAT
+  $TEMP/raw-%d.$EXTRACT_FORMAT
 
-FRAME_COUNT=`ls $TEMP/raw-*.$FORMAT | wc -l`
+FRAME_COUNT=`ls $TEMP/raw-*.$EXTRACT_FORMAT | wc -l`
 
 COUNT=0
 
@@ -36,7 +38,7 @@ mkdir -p $OUTPUT_DIR
 
 for i in `seq 1 $FRAME_COUNT`
 do
-  NEW_FRAME_INPUTS="$NEW_FRAME_INPUTS $TEMP/raw-$i.$FORMAT"
+  NEW_FRAME_INPUTS="$NEW_FRAME_INPUTS $TEMP/raw-$i.$EXTRACT_FORMAT"
   COUNT=$((COUNT+1))
   if [ $COUNT -eq $TILE_COUNT ] || [ $COUNT -eq $FRAME_COUNT ]
   then
@@ -45,6 +47,7 @@ do
     COUNT=0
     montage \
       $NEW_FRAME_INPUTS \
+      -quality $QUALITY \
       -tile $COLUMNS -geometry +0+0 $OUTPUT_DIR/$NEW_FRAME_INDEX.$FORMAT
     NEW_FRAME_INPUTS=""
   fi
