@@ -46,6 +46,7 @@ function lovevideo.newVideo(target)
   self.getWidth = lovevideo.getWidth
   self.getHeight = lovevideo.getHeight
   self.getDimensions = lovevideo.getDimensions
+  self.getAudio = lovevideo.getAudio
 
   assert(type(target)=="string",
     "Target expected, `"..type(target).."`provided.")
@@ -236,6 +237,12 @@ end
 -- @return the video width, the video height
 function lovevideo:getDimensions()
   return self._info.frame.width,self._info.frame.height
+end
+
+--- Gets the current audio Source
+-- @return the audio Source
+function lovevideo:getAudio()
+  return self._audio
 end
 
 return lovevideo
