@@ -23,18 +23,18 @@ local channel_imagedata = love.thread.getChannel("imagedata")
 local running = true
 
 while running do
-	collectgarbage("collect")
-	filename = channel_filename:demand()
-	if love.filesystem.exists(filename) then
-		local filedata = love.filesystem.newFileData(filename)
-		local imageData
-		if love.image.isCompressed(filedata) then
-			imageData = love.image.newCompressedData(filedata)
-		else
-			imageData = love.image.newImageData(filedata)
-		end
-		channel_imagedata:push(imageData)
-	elseif filename == "stop" then
-		running = false
-	end
+  collectgarbage("collect")
+  filename = channel_filename:demand()
+  if love.filesystem.exists(filename) then
+    local filedata = love.filesystem.newFileData(filename)
+    local imageData
+    if love.image.isCompressed(filedata) then
+      imageData = love.image.newCompressedData(filedata)
+    else
+      imageData = love.image.newImageData(filedata)
+    end
+    channel_imagedata:push(imageData)
+  elseif filename == "stop" then
+    running = false
+  end
 end
