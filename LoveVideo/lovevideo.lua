@@ -57,8 +57,10 @@ function lovevideo.newVideo(target)
     "Information file missing: `"..target.."/info.lua`.")
   self._info = require(target.."/info")
 
-  assert(self._info.image_format == "jpg" or self._info.image_format == "png",
-    "info.image_formate must be `jpg` or `png`.")
+  assert(self._info.image_format == "jpg" or
+    self._info.image_format == "png" or
+    self._info.image_format == "dds",
+    "info.image_formate must be `jpg`, `png` or `dds`.")
   assert(type(self._info.fps)=="number" and self._info.fps > 0,
     "info.fps must be a positive number.")
   assert(type(self._info.frame)=="table",

@@ -18,7 +18,16 @@ ROWS=`expr $OPEN_GL_TEXTURE_MAX / $HEIGHT`
 TILE_COUNT=`expr $ROWS \* $COLUMNS`
 
 EXTRACT_FORMAT=png
-FORMAT=jpg
+
+# DDS - requires imagemagick 6.8.6-10 or greater
+FORMAT=dds
+FORMAT_FLAGS="-define dds:compression=dxt1"
+
+# JPG
+#FORMAT=jpg
+#FORMAT_FLAGS=""
+
+IMAGEMAGICK_MONTAGE=montage
 
 echo "Converting $INPUT_FILE to raw $EXTRACT_FORMAT ($TEMP) .."
 
@@ -45,7 +54,7 @@ do
     NEW_FRAME_INDEX=$((NEW_FRAME_INDEX+1))
     echo "Processing frame $NEW_FRAME_INDEX/$NEW_FRAME_TOTAL .."
     COUNT=0
-    montage \
+    $IMAGEMAGICK_MONTAGE \
       $NEW_FRAME_INPUTS \
       -quality $QUALITY \
       -tile $COLUMNS -geometry +0+0 $OUTPUT_DIR/$NEW_FRAME_INDEX.$FORMAT

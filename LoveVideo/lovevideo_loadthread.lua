@@ -20,14 +20,19 @@ require("love.image")
 local channel_filename = love.thread.getChannel("filename")
 local channel_imagedata = love.thread.getChannel("imagedata")
 
-local imageData
 local running = true
 
 while running do
-  collectgarbage("collect")
+	collectgarbage("collect")
 	filename = channel_filename:demand()
 	if love.filesystem.exists(filename) then
-		imageData = love.image.newImageData(filename)
+		local filedata = love.filesystem.newFileData(filename)
+		local imageData
+		if love.image.isCompressed(filedata) then
+			imageData = love.image.newCompressedData(filedata)
+		else
+			imageData = love.image.newImageData(filedata)
+		end
 		channel_imagedata:push(imageData)
 	elseif filename == "stop" then
 		running = false
