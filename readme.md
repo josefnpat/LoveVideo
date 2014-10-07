@@ -11,6 +11,8 @@ _For a more in depth example, see the full documentation._
 Here's a quick sample usage:
 
 ```lua
+love.video = require "LoveVideo.lovevideo"
+
 bunny = love.video.newVideo("big_buck_bunny")
 
 function love.draw()
