@@ -1,12 +1,12 @@
 local info = {}
 
-info.image_format = "%FORMAT%"
-info.fps = %FPS%
+info.image_format = "%FORMAT%" -- The image type.
+info.fps = %FPS% -- The frame rate
 info.frame = {
-  width = %WIDTH%,
-  height = %HEIGHT%,
-  rows = %ROWS%,
-  columns = %COLUMNS%
+  width = %WIDTH%, -- Width of an individual frame
+  height = %HEIGHT%, -- Height of an individual frame
+  rows = %ROWS%, -- Number of rows in a superframe.
+  columns = %COLUMNS% -- Number of columns in a superframe.
 }
 
 return info
