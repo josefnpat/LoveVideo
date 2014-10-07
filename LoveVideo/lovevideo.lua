@@ -28,20 +28,27 @@ local lovevideo = {
 
 --- Instantiate a new instance of the video player.
 -- @param target <i>Required</i> The directory that should be loaded.
+-- @param srgb <i>Optional</i> Enable the srgb color space.
 -- No trailing forwardslash.
-function lovevideo.newVideo(target)
+function lovevideo.newVideo(target,srgb)
 
   local self = {}
   self._target = target
+  self._srgb = srgb and true or false
 
   -- Public functions
   self.update = lovevideo.update
   self.draw = lovevideo.draw
   self.isDone = lovevideo.isDone
+  self.setOnDone = lovevideo.setOnDone
+  self._ondone = function() end
   self.isPlaying = lovevideo.isPlaying
   self.pause = lovevideo.pause
   self.resume = lovevideo.resume
   self.stop = lovevideo.stop
+
+  self.setSpeed = lovevideo.setSpeed
+  self.getSpeed = lovevideo.getSpeed
 
   self.getWidth = lovevideo.getWidth
   self.getHeight = lovevideo.getHeight
@@ -60,7 +67,11 @@ function lovevideo.newVideo(target)
   assert(self._info.image_format == "jpg" or
     self._info.image_format == "png" or
     self._info.image_format == "dds",
-    "info.image_formate must be `jpg`, `png` or `dds`.")
+    "info.image_format must be `jpg`, `png` or `dds`.")
+
+  self._iscompressed = self._info.image_format == "dds"
+  self.isCompressed = lovevideo.isCompressed
+
   assert(type(self._info.fps)=="number" and self._info.fps > 0,
     "info.fps must be a positive number.")
   assert(type(self._info.frame)=="table",
@@ -83,6 +94,7 @@ function lovevideo.newVideo(target)
   self._nextload = 3
   self._pausevideo = false
   self._done = false
+  self._speed = 1
 
   self._quads = {}
   local c,r
@@ -108,13 +120,13 @@ function lovevideo.newVideo(target)
   self._loaderthread:start()
 
   self._images = {}
-
   for i = 1,2 do
     local image_file = target.."/"..i.."."..self._info.image_format
     if love.filesystem.isFile(image_file) then
       self._channelfilename:push(image_file)
       self._imagedata = self._channelimagedata:demand()
-      self._images[i] = love.graphics.newImage(self._imagedata)
+      self._images[i] = love.graphics.newImage(self._imagedata,
+        self._srgb and "srgb" or nil)
     end
   end
 
@@ -131,14 +143,13 @@ function lovevideo:update(dt)
 
   if self._done then return end
 
-  collectgarbage("collect")
-
   if not self._pausevideo then
     self._time = self._time + dt
     local new_dt = self._audio:tell() - self._audioposition
     self._audioposition = self._audio:tell()
     if self._audio:isStopped() then
       self._done = true
+      self:_ondone()
     end
     self._frametime = self._frametime + new_dt
   end
@@ -148,15 +159,16 @@ function lovevideo:update(dt)
       self._imagedata = self._channelimagedata:demand()
       if self._imagedata then
         self._images[ self._firstimage and 2 or 1 ] =
-          love.graphics.newImage(self._imagedata)
+          love.graphics.newImage(self._imagedata,
+            self._srgb and "srgb" or nil)
       end
       self._waitimage = false
       collectgarbage("collect")
     end
   end
 
-  if self._frametime >= 1/self._info.fps then
-    self._frametime = self._frametime - 1/self._info.fps
+  if self._frametime >= 1/self._info.fps*self._speed then
+    self._frametime = self._frametime - 1/self._info.fps*self._speed
     self._currentquad = self._currentquad + 1
     if self._currentquad > self._framesperimage then
       self._currentquad = 1
@@ -200,6 +212,14 @@ function lovevideo:isDone()
   return self._done
 end
 
+--- Set the function to be called when the video finishes.
+-- @param func <i>Required</i> the function to be called when the current
+-- instance finishes.
+function lovevideo:setOnDone( func )
+  assert(type(func) == "function","Argument must be a function.")
+  self._ondone = func
+end
+
 --- Determines if the instance is playing.
 function lovevideo:isPlaying()
   return not self._pausevideo
@@ -208,7 +228,23 @@ end
 --- Stop the current instance.
 function lovevideo:stop()
   self._done = true
+  self._ondone()
   self._audio:stop()
+end
+
+--- Sets the speed of the current instance.
+-- @param speed <i>Required</i> The multiplier at which the speed should play.
+function lovevideo:setSpeed(speed)
+  assert(type(speed) == "number","Speed must be a number")
+  assert(speed > 0, "Speed must be a number greater than zero.")
+  self._speed = speed
+  self._audio:setPitch(speed)
+end
+
+--- Gets the speed of the current instance.
+-- @return speed of current instance.
+function lovevideo:getSpeed()
+  return self._speed
 end
 
 --- Pause the current instance.
@@ -245,6 +281,12 @@ end
 -- @return the audio Source
 function lovevideo:getAudio()
   return self._audio
+end
+
+--- Determines if the current instance is using a compressed format (e.g. dds)
+-- @return boolean of whether the video is compressed
+function lovevideo:isCompressed()
+  return self._iscompressed
 end
 
 return lovevideo
