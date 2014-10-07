@@ -11,9 +11,9 @@ _For a more in depth example, see the full documentation._
 Here's a quick sample usage:
 
 ```lua
-love.video = require "LoveVideo.lovevideo"
+LoveVideo = require "LoveVideo.lovevideo"
 
-bunny = love.video.newVideo("big_buck_bunny")
+bunny = LoveVideo.newVideo("big_buck_bunny")
 
 function love.draw()
   bunny:draw(0,0,
@@ -44,6 +44,23 @@ To build a sample video, run;
 `./tool/gen_sample.sh`
 (dependencies: wget libimage-exiftool-perl libav-tools imagemagick)
 
+### Generated Video Structure
+
+Example video structure for video `sample`;
+
+    sample/1.png
+    sample/2.png
+    ...
+    sample/N.png
+    sample/info.lua
+    sample/audio.ogg
+
+* `sample/[1..N].png` - These are the frames for the video itself.
+* `sample/info.lua` - This has information about how the video should be played.
+  See info.lua.template for more details.
+* `sample/audio.ogg` - The audio file meant to be played during the video. Keep
+  in mind that LoveVideo usues this to keep time.
+
 ## Authors
 
 Josef Patoprsty (josefnpat) 2014
@@ -52,6 +69,10 @@ This module is a pure lua refactoring of:
 
 * Flashkot's 2012 mjpeg library and
 * Philipp &Uuml;berbacher 2014 update for 0.9.1.
+
+## Contributions
+
+* Leandro Fonseca (Shell32)
 
 ## License
 
