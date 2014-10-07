@@ -3,8 +3,8 @@ assert(love.filesystem.isDirectory("samples"),
   "Consider running `./tools/gen_sample.sh`?")
 
 -- Require or module
-love.video = require("LoveVideo.lovevideo")
-love.video.thread_file = "LoveVideo/lovevideo_loadthread.lua"
+LoveVideo = require("LoveVideo.lovevideo")
+LoveVideo.thread_file = "LoveVideo/lovevideo_loadthread.lua"
 
 samples = love.filesystem.getDirectoryItems("samples")
 function next_sample()
@@ -16,7 +16,7 @@ function next_sample()
   end
   sample_target = samples[sample_target_index]
   -- This is where we load the current sample with the LoveVideo module
-  bunny = love.video.newVideo("samples/"..sample_target)
+  bunny = LoveVideo.newVideo("samples/"..sample_target)
 end
 
 function love.load()
@@ -37,7 +37,7 @@ end
 function love.update(dt)
   bunny:update(dt) -- Update the video
   if bunny:isDone() then -- Check if the video is done
-    bunny = love.video.newVideo("samples/"..sample_target)
+    bunny = LoveVideo.newVideo("samples/"..sample_target)
   end
 end
 
