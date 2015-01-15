@@ -19,6 +19,8 @@ TILE_COUNT=`expr $ROWS \* $COLUMNS`
 
 EXTRACT_FORMAT=png
 
+VIDEO_TOOL=ffmpeg
+
 # DDS - requires imagemagick 6.8.6-10 or greater
 FORMAT=dds
 FORMAT_FLAGS="-define dds:compression=dxt1"
@@ -31,7 +33,7 @@ IMAGEMAGICK_MONTAGE=montage
 
 echo "Converting $INPUT_FILE to raw $EXTRACT_FORMAT ($TEMP) .."
 
-avconv -i $INPUT_FILE -r $FPS -f image2 \
+$VIDEO_TOOL -i $INPUT_FILE -r $FPS -f image2 \
   -v quiet \
   $TEMP/raw-%d.$EXTRACT_FORMAT
 
@@ -76,7 +78,7 @@ sed -i "s/%COLUMNS%/$COLUMNS/" $INFO_TARGET
 
 AUDIO_TARGET=$OUTPUT_DIR/audio.ogg
 echo "Extracting audio ($AUDIO_TARGET) .."
-avconv -i $INPUT_FILE  -vn -acodec libvorbis \
+$VIDEO_TOOL -i $INPUT_FILE  -vn -acodec libvorbis \
   -v quiet \
   $AUDIO_TARGET
 
